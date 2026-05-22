@@ -10,15 +10,16 @@
  * as a base64 data URL string.
  */
 
-function getEnv(key: string): string {
-  const value = process.env[key];
-  console.log(`Environment variable ${key}:`, value ? 'SET' : 'NOT SET');
-  if (!value) {
-    console.error(`Missing environment variable: ${key}`);
-    console.error('Available environment variables:', Object.keys(process.env).filter(k => k.includes('API') || k.includes('KEY')));
-    throw new Error(`Missing environment variable: ${key}. Please check your Vercel environment variables.`);
-  }
-  return value;
+// API keys - replace these after deployment
+const API_KEYS = {
+  OPENROUTER_API_KEY_1: "your-key-1",
+  OPENROUTER_API_KEY_2: "your-key-2",
+  FAL_API_KEY: "your-fal-key",
+  REPLICATE_API_TOKEN: "your-replicate-token"
+};
+
+function getApiKey(key: keyof typeof API_KEYS): string {
+  return API_KEYS[key];
 }
 
 /**
@@ -59,8 +60,8 @@ async function callOpenRouter(
   prompt: string,
   model: string,
 ): Promise<string> {
-  const apiKey1 = getEnv("OPENROUTER_API_KEY_1");
-  const apiKey2 = getEnv("OPENROUTER_API_KEY_2");
+  const apiKey1 = getApiKey("OPENROUTER_API_KEY_1");
+  const apiKey2 = getApiKey("OPENROUTER_API_KEY_2");
 
   const body = {
     model,
@@ -184,7 +185,7 @@ async function callFal(
   base64Image: string,
   prompt: string,
 ): Promise<string> {
-  const apiKey = getEnv("FAL_API_KEY");
+  const apiKey = getApiKey("FAL_API_KEY");
 
   const { mimeType, data } = stripDataUrl(base64Image);
 
@@ -242,7 +243,7 @@ async function callReplicate(
   base64Image: string,
   prompt: string,
 ): Promise<string> {
-  const apiKey = getEnv("REPLICATE_API_TOKEN");
+  const apiKey = getApiKey("REPLICATE_API_TOKEN");
 
   const { mimeType, data } = stripDataUrl(base64Image);
 
