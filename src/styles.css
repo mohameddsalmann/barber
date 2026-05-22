@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Adham Gabriil — TypeUI Dramatic with gold primary */
+
+@theme inline {
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-elevated: var(--elevated);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--primary-foreground);
+  --color-sidebar-accent: var(--elevated);
+  --color-sidebar-accent-foreground: var(--foreground);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--ring);
+
+  --color-chart-1: var(--primary);
+  --color-chart-2: var(--secondary);
+  --color-chart-3: #16A34A;
+  --color-chart-4: #D97706;
+  --color-chart-5: #DC2626;
+}
+
+:root {
+  --background: #09090B;
+  --foreground: #FAFAFA;
+  --card: #111113;
+  --card-foreground: #FAFAFA;
+  --popover: #16161A;
+  --popover-foreground: #FAFAFA;
+  --primary: #D4AF37;
+  --primary-foreground: #09090B;
+  --secondary: #F43F5E;
+  --secondary-foreground: #FAFAFA;
+  --muted: #18181B;
+  --muted-foreground: #A1A1AA;
+  --accent: #16161A;
+  --accent-foreground: #FAFAFA;
+  --destructive: #DC2626;
+  --destructive-foreground: #FAFAFA;
+  --border: #27272A;
+  --input: #18181B;
+  --ring: #D4AF37;
+  --elevated: #16161A;
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+  --sidebar: #0D0D0F;
+  --sidebar-foreground: #FAFAFA;
+  --radius: 12px;
+}
+
+.dark {
+  --background: #09090B;
+  --foreground: #FAFAFA;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  button,
+  .font-display {
+    font-weight: 900;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .glow-primary {
+    box-shadow: 0 0 0 2px rgb(212 175 55 / 0.2), 0 0 32px -8px rgb(212 175 55 / 0.4);
+  }
+
+  .gold-text {
+    background: linear-gradient(135deg, #F5D67A 0%, #D4AF37 50%, #A07E1F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+  }
+
+  @keyframes pulse-gold {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgb(212 175 55 / 0.5);
+    }
+
+    50% {
+      box-shadow: 0 0 0 8px rgb(212 175 55 / 0);
+    }
+  }
+
+  .pulse-gold {
+    animation: pulse-gold 2s ease-out infinite;
+  }
+
+  @keyframes skeleton {
+    0% {
+      background-color: #1C1C1F;
+    }
+
+    50% {
+      background-color: #27272A;
+    }
+
+    100% {
+      background-color: #1C1C1F;
+    }
+  }
+
+  .skeleton {
+    animation: skeleton 1.5s ease-in-out infinite;
+    border-radius: 8px;
+  }
+}
