@@ -12,8 +12,12 @@
 
 function getEnv(key: string): string {
   const value = process.env[key];
-  console.log(`Checking env var ${key}:`, value ? 'FOUND' : 'MISSING');
-  if (!value) throw new Error(`Missing environment variable: ${key}`);
+  console.log(`Environment variable ${key}:`, value ? 'SET' : 'NOT SET');
+  if (!value) {
+    console.error(`Missing environment variable: ${key}`);
+    console.error('Available environment variables:', Object.keys(process.env).filter(k => k.includes('API') || k.includes('KEY')));
+    throw new Error(`Missing environment variable: ${key}. Please check your Vercel environment variables.`);
+  }
   return value;
 }
 
