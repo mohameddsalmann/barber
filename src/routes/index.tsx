@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { LayoutDashboard, Scissors, User } from "lucide-react";
 import { logoUrl } from "@/mock/data";
 import { Stagger, StaggerItem } from "@/components/motion";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -16,28 +17,29 @@ export const Route = createFileRoute("/")({
 
 const roles = [
   {
-    title: "I'm an Owner",
-    desc: "Run your shop. Live queue, analytics, POS, and team management.",
+    titleKey: "landing.ownerTitle",
+    descKey: "landing.ownerDesc",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "I'm a Barber",
-    desc: "Your day, your chair, your earnings — at a glance.",
+    titleKey: "landing.barberTitle",
+    descKey: "landing.barberDesc",
     href: "/barber",
     icon: Scissors,
   },
   {
-    title: "Client Portal",
-    desc: "Style Studio & Barber Discovery — explore looks, find barbers, share reviews.",
+    titleKey: "landing.clientTitle",
+    descKey: "landing.clientDesc",
     href: "/client",
     icon: User,
   },
 ];
 
 function Index() {
+  const { t, locale, setLocale, dir } = useI18n();
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden" dir={dir}>
       {/* Ambient gold glow */}
       <div
         aria-hidden
@@ -48,6 +50,15 @@ function Index() {
         }}
       />
       <div className="relative max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <div className="absolute right-6 top-6">
+          <button
+            onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+            className="h-8 px-2.5 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary transition flex items-center gap-1.5 text-xs font-display"
+            aria-label={locale === "en" ? "Switch to Arabic" : "التبديل إلى الإنجليزية"}
+          >
+            {locale === "ar" ? "EN" : "ع"}
+          </button>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -63,10 +74,10 @@ function Index() {
             <span className="gold-text">Adham Gabriil</span>
           </h1>
           <p className="mt-3 text-sm md:text-base text-muted-foreground tracking-[0.2em] uppercase">
-            Art of Gents
+            {t("landing.tagline")}
           </p>
           <p className="mt-8 text-lg md:text-2xl text-foreground/90 max-w-2xl font-normal">
-            The operating system for modern barber shops.
+            {t("landing.description")}
           </p>
         </motion.div>
 
@@ -92,10 +103,10 @@ function Index() {
                     <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
                       <r.icon className="w-6 h-6 text-primary" />
                     </div>
-                    <h2 className="text-2xl font-display">{r.title}</h2>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{r.desc}</p>
+                    <h2 className="text-2xl font-display">{t(r.titleKey)}</h2>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{t(r.descKey)}</p>
                     <div className="mt-6 inline-flex items-center text-xs font-display tracking-wider text-primary">
-                      ENTER →
+                      {t("landing.enter")}
                     </div>
                   </div>
                 </motion.div>
@@ -105,7 +116,7 @@ function Index() {
         </Stagger>
 
         <div className="mt-16 text-center text-xs text-muted-foreground tracking-widest uppercase">
-          Investor Demo · v1.0
+          {t("landing.investorDemo")}
         </div>
       </div>
     </div>

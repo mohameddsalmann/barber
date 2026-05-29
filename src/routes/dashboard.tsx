@@ -12,33 +12,35 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { motion } from "framer-motion";
+import { useI18n, translations } from "@/lib/i18n";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Owner Dashboard — Adham Gabriil" },
-      { name: "description", content: "Run your shop. Live queue, analytics, POS, and team management." },
+      { title: translations.en["dashboard.title"] },
+      { name: "description", content: translations.en["dashboard.metaDescription"] },
     ],
   }),
   component: DashboardLayout,
 });
 
 const nav = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
-  { to: "/dashboard/queue", label: "Live Queue", icon: ListChecks },
-  { to: "/dashboard/calendar", label: "Calendar", icon: Calendar },
-  { to: "/dashboard/barbers", label: "Barbers", icon: Users },
-  { to: "/dashboard/clients", label: "Clients", icon: UserCircle2 },
-  { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/dashboard/pos", label: "POS", icon: CreditCard },
-  { to: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
+  { to: "/dashboard", label: "nav.overview", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard/queue", label: "nav.liveQueue", icon: ListChecks },
+  { to: "/dashboard/calendar", label: "nav.calendar", icon: Calendar },
+  { to: "/dashboard/barbers", label: "nav.barbers", icon: Users },
+  { to: "/dashboard/clients", label: "nav.clients", icon: UserCircle2 },
+  { to: "/dashboard/analytics", label: "nav.analytics", icon: BarChart3 },
+  { to: "/dashboard/pos", label: "nav.pos", icon: CreditCard },
+  { to: "/dashboard/settings", label: "nav.settings", icon: SettingsIcon },
 ];
 
 function DashboardLayout() {
   const { pathname } = useLocation();
+  const { t, locale, setLocale, dir } = useI18n();
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-background" dir={dir}>
       <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-border" style={{ backgroundColor: "#0D0D0F" }}>
         <div className="px-5 py-5 border-b border-border">
           <Logo size={36} />
@@ -65,7 +67,7 @@ function DashboardLayout() {
                   />
                 )}
                 <item.icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
+                <span>{t(item.label)}</span>
               </Link>
             );
           })}
@@ -75,7 +77,7 @@ function DashboardLayout() {
             <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-display text-primary">A</div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-display truncate">Adham G.</div>
-              <div className="text-[11px] text-muted-foreground truncate">Owner · Pro Plan</div>
+              <div className="text-[11px] text-muted-foreground truncate">{t("dashboard.ownerLabel")} · {t("dashboard.planLabel")}</div>
             </div>
           </div>
         </div>
@@ -90,7 +92,14 @@ function DashboardLayout() {
             <button className="h-9 w-9 rounded-md border border-border flex items-center justify-center hover:border-primary transition">
               <Bell className="w-4 h-4 text-muted-foreground" />
             </button>
-            <Link to="/" className="text-xs text-muted-foreground hover:text-primary tracking-wider uppercase">Exit</Link>
+            <button
+              onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+              className="h-8 px-2.5 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary transition flex items-center gap-1.5 text-xs font-display"
+              aria-label={locale === "en" ? "Switch to Arabic" : "التبديل إلى الإنجليزية"}
+            >
+              {locale === "ar" ? "EN" : "ع"}
+            </button>
+            <Link to="/" className="text-xs text-muted-foreground hover:text-primary tracking-wider uppercase">{t("common.exit")}</Link>
           </div>
         </header>
         {/* Mobile bottom nav */}
@@ -105,7 +114,7 @@ function DashboardLayout() {
                 style={{ color: active ? "#D4AF37" : "#A1A1AA" }}
               >
                 <item.icon className="w-4 h-4" />
-                {item.label}
+                {t(item.label)}
               </Link>
             );
           })}

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Line, LineChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from "recharts";
 import { revenueWeek, topServices, barberPerformance } from "@/mock/data";
 import { PageShell } from "@/components/motion";
 import { Pill } from "@/components/badges";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/dashboard/analytics")({
   head: () => ({ meta: [{ title: "Analytics — Owner Dashboard" }] }),
@@ -14,6 +15,8 @@ const HOURS = ["9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function Analytics() {
+  const { t, locale, dir } = useI18n();
+  useEffect(() => { document.title = t("route.dashboard.analyticsTitle"); }, [t]);
   const [period, setPeriod] = useState<"day" | "week" | "month">("week");
 
   // Heatmap intensity
@@ -31,16 +34,16 @@ function Analytics() {
   return (
     <PageShell>
       <div className="mb-6">
-        <h1 className="text-3xl">Analytics</h1>
-        <p className="text-sm text-muted-foreground mt-1">The shape of your business.</p>
+        <h1 className="text-3xl">{t("nav.analytics")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("analytics.pageSubtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <h2 className="text-lg">Revenue Over Time</h2>
+            <h2 className="text-lg">{t("analytics.revenueOverTime")}</h2>
             <div className="flex gap-2">
-              {(["day","week","month"] as const).map((p) => <Pill key={p} active={period === p} onClick={() => setPeriod(p)}>{p[0].toUpperCase() + p.slice(1)}</Pill>)}
+              {(["day", "week", "month"] as const).map((p) => <Pill key={p} active={period === p} onClick={() => setPeriod(p)}>{p === "day" ? t("calendar.dayView") : p === "week" ? t("calendar.weekView") : t("analytics.month")}</Pill>)}
             </div>
           </div>
           <div className="h-64">
@@ -57,7 +60,7 @@ function Analytics() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Retention Rate</div>
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{t("analytics.retentionRate")}</div>
           <div className="mt-3 flex items-center justify-center">
             <div className="relative w-40 h-40">
               <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
@@ -66,19 +69,19 @@ function Analytics() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <div className="font-mono text-3xl">78%</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">90-day</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("analytics.90day")}</div>
               </div>
             </div>
           </div>
           <div className="mt-4 text-center text-xs text-muted-foreground">
-            +6% vs previous period
+            {t("analytics.vsPrevious").replace("{percent}", "6")}
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-lg mb-4">Busiest Hours</h2>
+          <h2 className="text-lg mb-4">{t("analytics.busiestHours")}</h2>
           <div className="overflow-x-auto">
             <div className="inline-block">
               <div className="flex">
@@ -98,7 +101,7 @@ function Analytics() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-lg mb-4">Top Services</h2>
+          <h2 className="text-lg mb-4">{t("analytics.topServices")}</h2>
           <div className="h-64">
             <ResponsiveContainer>
               <BarChart data={topServices} layout="vertical" margin={{ left: 10 }}>
@@ -116,7 +119,7 @@ function Analytics() {
       </div>
 
       <div className="bg-card border border-border rounded-xl p-5">
-        <h2 className="text-lg mb-4">Barber Performance</h2>
+        <h2 className="text-lg mb-4">{t("analytics.barberPerformance")}</h2>
         <div className="h-64">
           <ResponsiveContainer>
             <BarChart data={barberPerformance} margin={{ left: -12 }}>

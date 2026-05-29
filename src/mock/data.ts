@@ -50,7 +50,7 @@ export type StyleOption = {
   id: string;
   name: string;
   category: "Fades" | "Crops" | "Classic" | "Textured" | "Long";
-  icon: string;
+  icon: string; // Lucide icon name
 };
 
 export type Service = {
@@ -102,9 +102,9 @@ export const barbers: Barber[] = [
     rating: 4.9,
     reviewCount: 312,
     status: "in",
-    avatar: av("Ahmed Khalil"),
+    avatar: "/barbers/1.png",
     bio: "Master barber with 12 years of experience. Specialized in modern fades and beard sculpting.",
-    todayEarnings: 240,
+    todayEarnings: 1440,
     totalClients: 420,
     yearsExperience: 12,
     todayCuts: 6,
@@ -124,9 +124,9 @@ export const barbers: Barber[] = [
     rating: 4.7,
     reviewCount: 198,
     status: "in",
-    avatar: av("Marcus Johnson"),
+    avatar: "/barbers/2.png",
     bio: "Beard sculptor and hot-towel shave artisan. Old-school precision, modern style.",
-    todayEarnings: 195,
+    todayEarnings: 1170,
     totalClients: 310,
     yearsExperience: 8,
     todayCuts: 4,
@@ -146,9 +146,9 @@ export const barbers: Barber[] = [
     rating: 4.8,
     reviewCount: 156,
     status: "break",
-    avatar: av("Youssef Nasser"),
+    avatar: "/barbers/3.png",
     bio: "Color specialist trained in Beirut and Paris. Bringing editorial-quality color to every chair.",
-    todayEarnings: 310,
+    todayEarnings: 1860,
     totalClients: 240,
     yearsExperience: 6,
     todayCuts: 3,
@@ -168,7 +168,7 @@ export const barbers: Barber[] = [
     rating: 4.6,
     reviewCount: 87,
     status: "out",
-    avatar: av("James Carter"),
+    avatar: "/barbers/4.png",
     bio: "Heritage barber. Pompadours, side parts, and timeless gentleman's cuts.",
     todayEarnings: 0,
     totalClients: 150,
@@ -184,20 +184,22 @@ export const barbers: Barber[] = [
   },
 ];
 
+// Prices in EGP (Egyptian Pounds) — realistic Egyptian barber pricing
 export const services: Service[] = [
-  { id: "s1", name: "Haircut", price: 25, duration: 30 },
-  { id: "s2", name: "Fade", price: 35, duration: 45 },
-  { id: "s3", name: "Beard Trim", price: 20, duration: 20 },
-  { id: "s4", name: "Hair + Beard", price: 50, duration: 60 },
-  { id: "s5", name: "Kids Cut", price: 18, duration: 25 },
-  { id: "s6", name: "Hair Color", price: 75, duration: 90 },
+  { id: "s1", name: "Haircut", price: 150, duration: 30 },
+  { id: "s2", name: "Fade", price: 200, duration: 45 },
+  { id: "s3", name: "Beard Trim", price: 100, duration: 20 },
+  { id: "s4", name: "Hair + Beard", price: 280, duration: 60 },
+  { id: "s5", name: "Kids Cut", price: 80, duration: 25 },
+  { id: "s6", name: "Hair Color", price: 500, duration: 90 },
 ];
 
+// Products in EGP
 export const products = [
-  { id: "p1", name: "Pomade", price: 22 },
-  { id: "p2", name: "Beard Oil", price: 28 },
-  { id: "p3", name: "Shampoo", price: 18 },
-  { id: "p4", name: "Wax", price: 24 },
+  { id: "p1", name: "Pomade", price: 120 },
+  { id: "p2", name: "Beard Oil", price: 150 },
+  { id: "p3", name: "Shampoo", price: 90 },
+  { id: "p4", name: "Wax", price: 130 },
 ];
 
 export const todayQueue: Booking[] = [
@@ -214,36 +216,43 @@ export const todayQueue: Booking[] = [
 ];
 
 export const clients: Client[] = [
-  { id: "c1", name: "Karim El-Sayed", phone: "+1 (415) 555-0142", email: "karim@example.com", visits: 48, ltv: 2400, lastVisit: "2026-04-25", tier: "vip", notes: "Prefers Ahmed. No.2 fade with hard part.", avatar: av("Karim El-Sayed") },
-  { id: "c2", name: "Sofia Torres", phone: "+1 (415) 555-0188", email: "sofia@example.com", visits: 12, ltv: 580, lastVisit: "2026-04-18", tier: "silver", notes: "Allergic to certain pomades. Use natural products.", avatar: av("Sofia Torres") },
-  { id: "c3", name: "James Okafor", phone: "+1 (415) 555-0103", email: "james@example.com", visits: 2, ltv: 85, lastVisit: "2026-04-22", tier: "bronze", notes: "New client. Likes textured crops.", avatar: av("James Okafor") },
-  { id: "c4", name: "Omar Hassan", phone: "+1 (415) 555-0167", email: "omar@example.com", visits: 26, ltv: 1300, lastVisit: "2026-04-20", tier: "gold", avatar: av("Omar Hassan") },
-  { id: "c5", name: "David Park", phone: "+1 (415) 555-0125", email: "david@example.com", visits: 18, ltv: 720, lastVisit: "2026-04-15", tier: "silver", avatar: av("David Park") },
-  { id: "c6", name: "Liam Brooks", phone: "+1 (415) 555-0177", email: "liam@example.com", visits: 4, ltv: 140, lastVisit: "2026-03-28", tier: "bronze", avatar: av("Liam Brooks") },
-  { id: "c7", name: "Noah Mitchell", phone: "+1 (415) 555-0192", email: "noah@example.com", visits: 31, ltv: 1820, lastVisit: "2026-04-26", tier: "gold", avatar: av("Noah Mitchell") },
-  { id: "c8", name: "Ethan Wright", phone: "+1 (415) 555-0156", email: "ethan@example.com", visits: 8, ltv: 320, lastVisit: "2026-02-10", tier: "bronze", avatar: av("Ethan Wright") },
-  { id: "c9", name: "Lucas Reyes", phone: "+1 (415) 555-0148", email: "lucas@example.com", visits: 22, ltv: 980, lastVisit: "2026-04-24", tier: "silver", avatar: av("Lucas Reyes") },
-  { id: "c10", name: "Aiden Walsh", phone: "+1 (415) 555-0119", email: "aiden@example.com", visits: 1, ltv: 35, lastVisit: "2026-04-26", tier: "bronze", avatar: av("Aiden Walsh") },
+  { id: "c1", name: "Karim El-Sayed", phone: "+20 100 555 0142", email: "karim@example.com", visits: 48, ltv: 14400, lastVisit: "2026-04-25", tier: "vip", notes: "Prefers Ahmed. No.2 fade with hard part.", avatar: av("Karim El-Sayed") },
+  { id: "c2", name: "Sofia Torres", phone: "+20 100 555 0188", email: "sofia@example.com", visits: 12, ltv: 3480, lastVisit: "2026-04-18", tier: "silver", notes: "Allergic to certain pomades. Use natural products.", avatar: av("Sofia Torres") },
+  { id: "c3", name: "James Okafor", phone: "+20 100 555 0103", email: "james@example.com", visits: 2, ltv: 510, lastVisit: "2026-04-22", tier: "bronze", notes: "New client. Likes textured crops.", avatar: av("James Okafor") },
+  { id: "c4", name: "Omar Hassan", phone: "+20 100 555 0167", email: "omar@example.com", visits: 26, ltv: 7800, lastVisit: "2026-04-20", tier: "gold", avatar: av("Omar Hassan") },
+  { id: "c5", name: "David Park", phone: "+20 100 555 0125", email: "david@example.com", visits: 18, ltv: 4320, lastVisit: "2026-04-15", tier: "silver", avatar: av("David Park") },
+  { id: "c6", name: "Liam Brooks", phone: "+20 100 555 0177", email: "liam@example.com", visits: 4, ltv: 840, lastVisit: "2026-03-28", tier: "bronze", avatar: av("Liam Brooks") },
+  { id: "c7", name: "Noah Mitchell", phone: "+20 100 555 0192", email: "noah@example.com", visits: 31, ltv: 10920, lastVisit: "2026-04-26", tier: "gold", avatar: av("Noah Mitchell") },
+  { id: "c8", name: "Ethan Wright", phone: "+20 100 555 0156", email: "ethan@example.com", visits: 8, ltv: 1920, lastVisit: "2026-02-10", tier: "bronze", avatar: av("Ethan Wright") },
+  { id: "c9", name: "Lucas Reyes", phone: "+20 100 555 0148", email: "lucas@example.com", visits: 22, ltv: 5880, lastVisit: "2026-04-24", tier: "silver", avatar: av("Lucas Reyes") },
+  { id: "c10", name: "Aiden Walsh", phone: "+20 100 555 0119", email: "aiden@example.com", visits: 1, ltv: 210, lastVisit: "2026-04-26", tier: "bronze", avatar: av("Aiden Walsh") },
 ];
 
 export const revenueWeek = [
-  { day: "Mon", revenue: 820 },
-  { day: "Tue", revenue: 1240 },
-  { day: "Wed", revenue: 980 },
-  { day: "Thu", revenue: 1840 },
-  { day: "Fri", revenue: 2100 },
-  { day: "Sat", revenue: 1650 },
-  { day: "Sun", revenue: 420 },
+  { day: "Mon", revenue: 4920 },
+  { day: "Tue", revenue: 7440 },
+  { day: "Wed", revenue: 5880 },
+  { day: "Thu", revenue: 11040 },
+  { day: "Fri", revenue: 12600 },
+  { day: "Sat", revenue: 9900 },
+  { day: "Sun", revenue: 2520 },
 ];
 
 export const barberEarningsWeek = [
-  { day: "Mon", earned: 180 },
-  { day: "Tue", earned: 240 },
-  { day: "Wed", earned: 210 },
-  { day: "Thu", earned: 320 },
-  { day: "Fri", earned: 380 },
-  { day: "Sat", earned: 290 },
+  { day: "Mon", earned: 1080 },
+  { day: "Tue", earned: 1440 },
+  { day: "Wed", earned: 1260 },
+  { day: "Thu", earned: 1920 },
+  { day: "Fri", earned: 2280 },
+  { day: "Sat", earned: 1740 },
   { day: "Sun", earned: 0 },
+];
+
+export const barberEarningsMonth = [
+  { day: "Week 1", earned: 6720 },
+  { day: "Week 2", earned: 8400 },
+  { day: "Week 3", earned: 7560 },
+  { day: "Week 4", earned: 9240 },
 ];
 
 export const topServices = [
@@ -256,29 +265,29 @@ export const topServices = [
 ];
 
 export const barberPerformance = [
-  { name: "Ahmed", revenue: 1820, clients: 42 },
-  { name: "Marcus", revenue: 1450, clients: 38 },
-  { name: "Youssef", revenue: 1980, clients: 28 },
-  { name: "James", revenue: 980, clients: 22 },
+  { name: "Ahmed", revenue: 10920, clients: 42 },
+  { name: "Marcus", revenue: 8700, clients: 38 },
+  { name: "Youssef", revenue: 11880, clients: 28 },
+  { name: "James", revenue: 5880, clients: 22 },
 ];
 
 export const styleOptions: StyleOption[] = [
-  { id: "s1", name: "Skin Fade", category: "Fades", icon: "✂️" },
-  { id: "s2", name: "High Fade", category: "Fades", icon: "✂️" },
-  { id: "s3", name: "Drop Fade", category: "Fades", icon: "✂️" },
-  { id: "s4", name: "Low Taper", category: "Fades", icon: "✂️" },
-  { id: "s5", name: "Textured Crop", category: "Crops", icon: "🌾" },
-  { id: "s6", name: "French Crop", category: "Crops", icon: "🌾" },
-  { id: "s7", name: "Caesar", category: "Crops", icon: "🌾" },
-  { id: "s8", name: "Crew Cut", category: "Crops", icon: "🌾" },
-  { id: "s9", name: "Pompadour", category: "Classic", icon: "🎩" },
-  { id: "s10", name: "Side Part", category: "Classic", icon: "🎩" },
-  { id: "s11", name: "Quiff", category: "Classic", icon: "🎩" },
-  { id: "s12", name: "Buzz Cut", category: "Textured", icon: "🧩" },
-  { id: "s13", name: "Undercut", category: "Textured", icon: "🧩" },
-  { id: "s14", name: "Hard Part", category: "Textured", icon: "🧩" },
-  { id: "s15", name: "Long Layers", category: "Long", icon: "💇" },
-  { id: "s16", name: "Curly Top", category: "Long", icon: "💇" },
+  { id: "s1", name: "Skin Fade", category: "Fades", icon: "Scissors" },
+  { id: "s2", name: "High Fade", category: "Fades", icon: "Scissors" },
+  { id: "s3", name: "Drop Fade", category: "Fades", icon: "Scissors" },
+  { id: "s4", name: "Low Taper", category: "Fades", icon: "Scissors" },
+  { id: "s5", name: "Textured Crop", category: "Crops", icon: "Wheat" },
+  { id: "s6", name: "French Crop", category: "Crops", icon: "Wheat" },
+  { id: "s7", name: "Caesar", category: "Crops", icon: "Wheat" },
+  { id: "s8", name: "Crew Cut", category: "Crops", icon: "Wheat" },
+  { id: "s9", name: "Pompadour", category: "Classic", icon: "Crown" },
+  { id: "s10", name: "Side Part", category: "Classic", icon: "Crown" },
+  { id: "s11", name: "Quiff", category: "Classic", icon: "Crown" },
+  { id: "s12", name: "Buzz Cut", category: "Textured", icon: "Grid3x3" },
+  { id: "s13", name: "Undercut", category: "Textured", icon: "Grid3x3" },
+  { id: "s14", name: "Hard Part", category: "Textured", icon: "Grid3x3" },
+  { id: "s15", name: "Long Layers", category: "Long", icon: "Wind" },
+  { id: "s16", name: "Curly Top", category: "Long", icon: "Wind" },
 ];
 
 export const hairstyleResults: HairstyleResult[] = [
@@ -295,17 +304,17 @@ export const hairstyleResults: HairstyleResult[] = [
 ];
 
 export const nearbyShops = [
-  { id: "shop1", name: "Adham Gabriil — Downtown", waitMin: 8, distance: "0.4 mi" },
-  { id: "shop2", name: "Adham Gabriil — Marina", waitMin: 22, distance: "1.2 mi" },
-  { id: "shop3", name: "Adham Gabriil — Mission", waitMin: 35, distance: "2.1 mi" },
+  { id: "shop1", name: "Adham Gabriil — Downtown", waitMin: 8, distance: "0.6 كم" },
+  { id: "shop2", name: "Adham Gabriil — Marina", waitMin: 22, distance: "1.9 كم" },
+  { id: "shop3", name: "Adham Gabriil — Mission", waitMin: 35, distance: "3.4 كم" },
 ];
 
 export const visitHistory = [
-  { date: "2026-04-25", barber: "Ahmed Khalil", service: "Fade", spent: 35 },
-  { date: "2026-04-04", barber: "Ahmed Khalil", service: "Hair + Beard", spent: 50 },
-  { date: "2026-03-14", barber: "Marcus Johnson", service: "Beard Trim", spent: 20 },
-  { date: "2026-02-28", barber: "Ahmed Khalil", service: "Fade", spent: 35 },
-  { date: "2026-02-08", barber: "Ahmed Khalil", service: "Haircut", spent: 25 },
+  { date: "2026-04-25", barber: "Ahmed Khalil", service: "Fade", spent: 200 },
+  { date: "2026-04-04", barber: "Ahmed Khalil", service: "Hair + Beard", spent: 280 },
+  { date: "2026-03-14", barber: "Marcus Johnson", service: "Beard Trim", spent: 100 },
+  { date: "2026-02-28", barber: "Ahmed Khalil", service: "Fade", spent: 200 },
+  { date: "2026-02-08", barber: "Ahmed Khalil", service: "Haircut", spent: 150 },
 ];
 
 export const reviews = [

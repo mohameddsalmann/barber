@@ -1,9 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { DollarSign, Calendar, Users, Clock } from "lucide-react";
 import { barbers, todayQueue, getService, revenueWeek } from "@/mock/data";
 import { PageShell, Stagger, StaggerItem } from "@/components/motion";
 import { StatusBadge } from "@/components/badges";
+import { useI18n } from "@/lib/i18n";
+import { formatEGP, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({
@@ -12,19 +15,22 @@ export const Route = createFileRoute("/dashboard/")({
   component: Overview,
 });
 
-const kpis = [
-  { label: "Today's Revenue", value: "$1,840", icon: DollarSign, sub: "+12% vs yesterday" },
-  { label: "Bookings Today", value: "24", icon: Calendar, sub: "6 walk-ins" },
-  { label: "Active Clients", value: "312", icon: Users, sub: "+18 this week" },
-  { label: "Avg Wait", value: "18 min", icon: Clock, sub: "↓ 4 min vs last wk" },
+const getKpis = (t: (k: string) => string, locale: string) => [
+  { label: t("dashboard.kpi.todayRevenue"), value: formatEGP(1840, locale), icon: DollarSign, sub: "+12% vs yesterday" },
+  { label: t("dashboard.kpi.bookingsToday"), value: formatNumber(24, locale), icon: Calendar, sub: "6 walk-ins" },
+  { label: t("dashboard.kpi.activeClients"), value: formatNumber(312, locale), icon: Users, sub: "+18 this week" },
+  { label: t("dashboard.kpi.avgWait"), value: `18 ${t("common.min")}`, icon: Clock, sub: "↓ 4 min vs last wk" },
 ];
 
 function Overview() {
+  const { t, locale, dir } = useI18n();
+  useEffect(() => { document.title = t("route.dashboard.overviewTitle"); }, [t]);
+  const kpis = getKpis(t, locale);
   return (
     <PageShell>
       <div className="mb-6">
-        <h1 className="text-3xl">Overview</h1>
-        <p className="text-sm text-muted-foreground mt-1">Live snapshot of your shop, right now.</p>
+        <h1 className="text-3xl">{t("nav.overview")}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("dashboard.overviewSubtitle")}</p>
       </div>
 
       <Stagger className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -45,8 +51,8 @@ function Overview() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg">Revenue · Last 7 days</h2>
-            <span className="text-xs text-muted-foreground">Total: $9,050</span>
+            <h2 className="text-lg">{t("dashboard.revenueChartTitle")}</h2>
+            <span className="text-xs text-muted-foreground">{formatEGP(9050, locale)}</span>
           </div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -72,7 +78,7 @@ function Overview() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
-          <h2 className="text-lg mb-4">Live Queue</h2>
+          <h2 className="text-lg mb-4">{t("dashboard.liveQueueSidebar")}</h2>
           <div className="space-y-3">
             {barbers.map((b) => {
               const queue = todayQueue.filter((q) => q.barberId === b.id && q.status !== "done");
@@ -83,7 +89,7 @@ function Overview() {
                   <div className="flex-1 min-w-0">
                     <div className="font-display text-sm truncate">{b.name}</div>
                     <div className="text-[11px] text-muted-foreground truncate">
-                      {current ? `Now: ${current.clientName}` : "Idle"}
+                      {current ? t("dashboard.nowWith").replace("{name}", current.clientName) : t("dashboard.idle")}
                     </div>
                   </div>
                   <span className="text-xs font-mono text-primary">{queue.length}</span>
@@ -96,18 +102,18 @@ function Overview() {
 
       <div className="bg-card border border-border rounded-xl">
         <div className="flex items-center justify-between p-5 border-b border-border">
-          <h2 className="text-lg">Recent Bookings</h2>
-          <Link to="/dashboard/queue" className="text-xs text-primary tracking-wider uppercase">View All →</Link>
+          <h2 className="text-lg">{t("dashboard.recentBookings")}</h2>
+          <Link to="/dashboard/queue" className="text-xs text-primary tracking-wider uppercase">{t("dashboard.viewAll")}</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-[11px] text-muted-foreground uppercase tracking-wider">
-                <th className="px-5 py-3 font-normal">Client</th>
-                <th className="px-5 py-3 font-normal">Barber</th>
-                <th className="px-5 py-3 font-normal">Service</th>
-                <th className="px-5 py-3 font-normal">Time</th>
-                <th className="px-5 py-3 font-normal">Status</th>
+                <th className="px-5 py-3 font-normal">{t("common.client")}</th>
+                <th className="px-5 py-3 font-normal">{t("common.barber")}</th>
+                <th className="px-5 py-3 font-normal">{t("common.service")}</th>
+                <th className="px-5 py-3 font-normal">{t("common.time")}</th>
+                <th className="px-5 py-3 font-normal">{t("common.status")}</th>
               </tr>
             </thead>
             <tbody>

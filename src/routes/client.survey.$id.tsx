@@ -5,8 +5,10 @@ import { Star, Check, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { barbers, logoUrl } from "@/mock/data";
+import { barbers, logoUrl, getService } from "@/mock/data";
 import { PageShell } from "@/components/motion";
+import { useI18n, getServiceName } from "@/lib/i18n";
+import { formatEGP, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/client/survey/$id")({
   head: () => ({ meta: [{ title: "How was your visit? — Client App" }] }),
@@ -25,18 +27,28 @@ const surveySchema = z.object({
 
 type SurveyForm = z.infer<typeof surveySchema>;
 
-const RATING_LABELS: Record<number, string> = { 1: "Awful", 2: "Poor", 3: "OK", 4: "Great", 5: "Amazing" };
+const getRatingLabels = (t: (k: string) => string): Record<number, string> => ({
+  1: t("survey.rating.awful"),
+  2: t("survey.rating.poor"),
+  3: t("survey.rating.ok"),
+  4: t("survey.rating.great"),
+  5: t("survey.rating.amazing"),
+});
 
-const CATEGORIES = [
-  { key: "haircutQuality" as const, label: "Haircut Quality", options: [{ v: "poor", l: "👎 Poor" }, { v: "ok", l: "OK" }, { v: "excellent", l: "Excellent 👍" }] },
-  { key: "waitTime" as const, label: "Wait Time", options: [{ v: "too_long", l: "Too Long" }, { v: "just_right", l: "Just Right" }, { v: "fast", l: "Fast" }] },
-  { key: "cleanliness" as const, label: "Cleanliness", options: [{ v: "below_avg", l: "Below Avg" }, { v: "good", l: "Good" }, { v: "spotless", l: "Spotless" }] },
-  { key: "valueForMoney" as const, label: "Value for Money", options: [{ v: "pricey", l: "Pricey" }, { v: "fair", l: "Fair" }, { v: "great_value", l: "Great Value" }] },
+const getCategories = (t: (k: string) => string) => [
+  { key: "haircutQuality" as const, label: t("survey.category.haircutQuality"), options: [{ v: "poor", l: t("survey.option.poor") }, { v: "ok", l: t("survey.option.ok") }, { v: "excellent", l: t("survey.option.excellent") }] },
+  { key: "waitTime" as const, label: t("survey.category.waitTime"), options: [{ v: "too_long", l: t("survey.option.tooLong") }, { v: "just_right", l: t("survey.option.justRight") }, { v: "fast", l: t("survey.option.fast") }] },
+  { key: "cleanliness" as const, label: t("survey.category.cleanliness"), options: [{ v: "below_avg", l: t("survey.option.belowAvg") }, { v: "good", l: t("survey.option.good") }, { v: "spotless", l: t("survey.option.spotless") }] },
+  { key: "valueForMoney" as const, label: t("survey.category.valueForMoney"), options: [{ v: "pricey", l: t("survey.option.pricey") }, { v: "fair", l: t("survey.option.fair") }, { v: "great_value", l: t("survey.option.greatValue") }] },
 ];
 
 function Survey() {
   const barber = barbers[0];
+  const { t, locale } = useI18n();
+  useEffect(() => { document.title = t("survey.title"); }, [t]);
   const [done, setDone] = useState(false);
+  const ratingLabels = getRatingLabels(t);
+  const categories = getCategories(t);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const { setValue, watch, handleSubmit } = useForm<SurveyForm>({
@@ -114,7 +126,7 @@ function Survey() {
                 {/* Header */}
                 <div className="text-center">
                   <img src={logoUrl} alt="" className="w-12 h-12 rounded-lg mx-auto" />
-                  <h1 className="text-2xl mt-3">How was your visit?</h1>
+                  <h1 className="text-2xl mt-3">{t("survey.title")}</h1>
                 </div>
 
                 {/* Barber mini card */}
@@ -122,13 +134,13 @@ function Survey() {
                   <img src={barber.avatar} alt="" className="w-12 h-12 rounded-full" />
                   <div className="flex-1">
                     <div className="font-display text-sm">{barber.name}</div>
-                    <div className="text-[11px] text-muted-foreground">Fade · 35 min · $35</div>
+                    <div className="text-[11px] text-muted-foreground">{getServiceName(getService("s2").name, t)} · 35 {t("common.min")} · {formatEGP(35, locale)}</div>
                   </div>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                   {/* Overall Rating */}
-                  <h2 className="mt-7 mb-3 text-xs uppercase tracking-wider text-muted-foreground">Overall rating</h2>
+                  <h2 className="mt-7 mb-3 text-xs uppercase tracking-wider text-muted-foreground">{t("survey.overallRating")}</h2>
                   <div className="flex items-center justify-between gap-1">
                     {[1, 2, 3, 4, 5].map((v) => (
                       <button
@@ -144,14 +156,14 @@ function Survey() {
                           />
                         </motion.div>
                         <span className="text-[9px] uppercase tracking-wider" style={{ color: overallRating === v ? "#D4AF37" : "#71717A" }}>
-                          {RATING_LABELS[v]}
+                          {ratingLabels[v]}
                         </span>
                       </button>
                     ))}
                   </div>
 
                   {/* Category Ratings */}
-                  {CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <div key={cat.key} className="mt-5">
                       <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{cat.label}</div>
                       <div className="flex gap-2">
@@ -179,20 +191,20 @@ function Survey() {
                   ))}
 
                   {/* Text Feedback */}
-                  <h2 className="mt-7 mb-2 text-xs uppercase tracking-wider text-muted-foreground">Anything else?</h2>
+                  <h2 className="mt-7 mb-2 text-xs uppercase tracking-wider text-muted-foreground">{t("survey.anythingElse")}</h2>
                   <textarea
                     onChange={(e) => setValue("comment", e.target.value)}
-                    placeholder="Tell us what you loved or how we can improve…"
+                    placeholder={t("survey.commentPlaceholder")}
                     className="w-full h-28 rounded-xl bg-card border border-border p-3 text-sm resize-none focus:outline-none focus:border-primary"
                   />
 
                   {/* Would Return */}
-                  <h2 className="mt-7 mb-2 text-xs uppercase tracking-wider text-muted-foreground">Would you return?</h2>
+                  <h2 className="mt-7 mb-2 text-xs uppercase tracking-wider text-muted-foreground">{t("survey.wouldReturn")}</h2>
                   <div className="flex gap-2">
                     {[
-                      { v: "yes" as const, l: "YES ❤️" },
-                      { v: "maybe" as const, l: "MAYBE" },
-                      { v: "no" as const, l: "NO" },
+                      { v: "yes" as const, l: t("survey.option.yes") },
+                      { v: "maybe" as const, l: t("survey.option.maybe") },
+                      { v: "no" as const, l: t("survey.option.no") },
                     ].map((opt) => (
                       <button
                         key={opt.v}
@@ -216,7 +228,7 @@ function Survey() {
                     disabled={overallRating === 0}
                     className="mt-8 w-full h-12 rounded-md bg-primary text-primary-foreground font-display text-xs uppercase tracking-wider active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
                   >
-                    Send My Feedback
+                    {t("survey.sendFeedback")}
                   </button>
                 </form>
               </motion.div>
@@ -231,12 +243,12 @@ function Survey() {
                 >
                   <Check className="w-10 h-10 text-primary" />
                 </motion.div>
-                <h2 className="text-2xl mt-5">Thank you, Karim!</h2>
+                <h2 className="text-2xl mt-5">{t("survey.thankYouName").replace("{name}", "Karim")}</h2>
                 <p className="text-sm text-muted-foreground mt-2 max-w-[280px] mx-auto">
-                  See you next time. You earned <span className="text-primary font-mono">+50</span> loyalty points.
+                  {t("survey.earnedPoints").replace("{points}", formatNumber(50, locale))}
                 </p>
                 <div className="mt-6 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-primary">
-                  <Sparkles className="w-3 h-3" /> Loyalty boost applied
+                  <Sparkles className="w-3 h-3" /> {t("survey.loyaltyBoost")}
                 </div>
               </motion.div>
             )}

@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { barbers, todayQueue, getService, getBarber } from "@/mock/data";
 import { PageShell } from "@/components/motion";
 import { Pill, StatusBadge } from "@/components/badges";
 import { X } from "lucide-react";
+import { useI18n, getServiceName } from "@/lib/i18n";
+import { formatEGP, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/dashboard/calendar")({
   head: () => ({ meta: [{ title: "Calendar — Owner Dashboard" }] }),
@@ -15,6 +17,8 @@ const HOURS = Array.from({ length: 10 }, (_, i) => 9 + i); // 9am..6pm
 const COLORS = ["#D4AF37", "#E5C158", "#F5D67A", "#A07E1F"];
 
 function CalendarPage() {
+  const { t, locale, dir } = useI18n();
+  useEffect(() => { document.title = t("route.dashboard.calendarTitle"); }, [t]);
   const [view, setView] = useState<"day" | "week">("day");
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -32,12 +36,12 @@ function CalendarPage() {
     <PageShell>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl">Calendar</h1>
-          <p className="text-sm text-muted-foreground mt-1">Today — Monday, April 27, 2026</p>
+          <h1 className="text-3xl">{t("nav.calendar")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("calendar.pageSubtitle").replace("{date}", formatDate("2026-04-27", locale))}</p>
         </div>
         <div className="flex gap-2">
-          <Pill active={view === "day"} onClick={() => setView("day")}>Day</Pill>
-          <Pill active={view === "week"} onClick={() => setView("week")}>Week</Pill>
+          <Pill active={view === "day"} onClick={() => setView("day")}>{t("calendar.dayView")}</Pill>
+          <Pill active={view === "week"} onClick={() => setView("week")}>{t("calendar.weekView")}</Pill>
         </div>
       </div>
 
@@ -81,7 +85,7 @@ function CalendarPage() {
                     }}
                   >
                     <div className="font-display text-[11px] truncate">{bl.clientName}</div>
-                    <div className="text-[10px] text-muted-foreground truncate">{svc.name} · {bl.time}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{getServiceName(svc.name, t)} · {bl.time}</div>
                   </button>
                 );
               })}
@@ -102,19 +106,19 @@ function CalendarPage() {
             <button onClick={() => setSelected(null)} className="absolute top-4 right-4 p-2 rounded-md hover:bg-muted">
               <X className="w-4 h-4" />
             </button>
-            <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">Booking</div>
+            <div className="mb-1 text-[11px] uppercase tracking-wider text-muted-foreground">{t("calendar.bookingDetails")}</div>
             <h2 className="text-2xl mb-4">{sel.clientName}</h2>
             <StatusBadge status={sel.status} />
             <div className="mt-6 space-y-4">
-              <Row label="Time" value={sel.time} />
-              <Row label="Service" value={getService(sel.serviceId).name} />
-              <Row label="Barber" value={getBarber(sel.barberId).name} />
-              <Row label="Duration" value={`${getService(sel.serviceId).duration} min`} />
-              <Row label="Price" value={`$${getService(sel.serviceId).price}`} />
+              <Row label={t("common.time")} value={sel.time} />
+              <Row label={t("common.service")} value={getServiceName(getService(sel.serviceId).name, t)} />
+              <Row label={t("common.barber")} value={getBarber(sel.barberId).name} />
+              <Row label={t("common.duration")} value={`${getService(sel.serviceId).duration} ${t("common.min")}`} />
+              <Row label={t("common.price")} value={formatEGP(getService(sel.serviceId).price, locale)} />
             </div>
             <div className="mt-6 flex gap-3">
-              <button className="flex-1 h-10 rounded-md border border-border text-sm">Reschedule</button>
-              <button className="flex-1 h-10 rounded-md bg-primary text-primary-foreground font-display text-xs uppercase tracking-wider">Check In</button>
+              <button className="flex-1 h-10 rounded-md border border-border text-sm">{t("calendar.reschedule")}</button>
+              <button className="flex-1 h-10 rounded-md bg-primary text-primary-foreground font-display text-xs uppercase tracking-wider">{t("calendar.checkIn")}</button>
             </div>
           </motion.aside>
         )}

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Heart, Sparkles, Wand2, Camera, Share2, Search } from "lucide-react";
+import { Upload, Heart, Sparkles, Wand2, Camera, Share2, Search, Scissors, Wheat, Crown, Grid3x3, Wind, type LucideIcon } from "lucide-react";
 import { styleOptions } from "@/mock/data";
 import type { StyleOption } from "@/mock/data";
 import { PageShell } from "@/components/motion";
@@ -14,6 +14,20 @@ export const Route = createFileRoute("/client/style-studio")({
 
 type Mode = "discover" | "tryon";
 type Phase = "intro" | "loading" | "results" | "error";
+
+const iconMap: Record<string, LucideIcon> = {
+  Scissors,
+  Wheat,
+  Crown,
+  Grid3x3,
+  Wind,
+};
+
+function StyleIcon({ name, className }: { name: string; className?: string }) {
+  const Icon = iconMap[name];
+  if (!Icon) return null;
+  return <Icon className={className} />;
+}
 
 function StyleStudio() {
   const [mode, setMode] = useState<Mode>("discover");
@@ -358,7 +372,7 @@ function TryOnMode() {
                     backgroundColor: selectedStyle?.id === s.id ? "rgba(212,175,55,0.08)" : "transparent",
                   }}
                 >
-                  <span className="text-lg">{s.icon}</span>
+                  <StyleIcon name={s.icon} className="w-5 h-5" />
                   <span className="text-[10px] font-display tracking-wider truncate" style={{ color: selectedStyle?.id === s.id ? "#D4AF37" : "#A1A1AA" }}>
                     {s.name}
                   </span>

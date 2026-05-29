@@ -1,27 +1,34 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Star, MessageCircle, Users, Award, Clock, Calendar } from "lucide-react";
-import { getBarber, services } from "@/mock/data";
+import { getBarber, services, getService } from "@/mock/data";
 import { PageShell, Stagger, StaggerItem } from "@/components/motion";
+import { useI18n, getServiceName } from "@/lib/i18n";
+import { formatEGP, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/client/barbers/$id")({
   head: () => ({ meta: [{ title: "Barber Portfolio — Client App" }] }),
   component: BarberPortfolio,
 });
 
-const STATUS = {
-  in:    { label: "Available", color: "#16A34A" },
-  break: { label: "With Client", color: "#D97706" },
-  out:   { label: "Off Today", color: "#71717A" },
-} as const;
+const getStatus = (t: (k: string) => string) => ({
+  in: { label: t("client.barber.status.available"), color: "#16A34A" },
+  break: { label: t("client.barber.status.withClient"), color: "#D97706" },
+  out: { label: t("client.barber.status.offToday"), color: "#71717A" },
+} as const);
 
-const DAY_LABELS: Record<string, string> = { mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun" };
+const getDayLabels = (t: (k: string) => string): Record<string, string> => ({
+  mon: t("days.mon"), tue: t("days.tue"), wed: t("days.wed"), thu: t("days.thu"), fri: t("days.fri"), sat: t("days.sat"), sun: t("days.sun")
+});
 
 function BarberPortfolio() {
   const { id } = Route.useParams();
   const router = useRouter();
   const barber = getBarber(id);
-  const status = STATUS[barber.status];
+  const { t, locale } = useI18n();
+  useEffect(() => { document.title = `${barber.name} — ${t("client.barber.portfolio")}`; }, [barber.name, t]);
+  const status = getStatus(t)[barber.status];
 
   return (
     <PageShell>
@@ -64,14 +71,14 @@ function BarberPortfolio() {
 
         {/* Stats Row */}
         <div className="mt-5 grid grid-cols-4 gap-2">
-          <Stat icon={Users} label="Clients" value={barber.totalClients.toString()} />
-          <Stat icon={Star} label="Rating" value={barber.rating.toString()} />
-          <Stat icon={Award} label="Years" value={barber.yearsExperience.toString()} />
-          <Stat icon={Clock} label="Today" value={`${barber.todayCuts} cuts`} />
+          <Stat icon={Users} label={t("client.barber.statClients")} value={formatNumber(barber.totalClients, locale)} />
+          <Stat icon={Star} label={t("client.barber.statRating")} value={barber.rating.toString()} />
+          <Stat icon={Award} label={t("client.barber.statYears")} value={formatNumber(barber.yearsExperience, locale)} />
+          <Stat icon={Clock} label={t("client.barber.statToday")} value={`${formatNumber(barber.todayCuts, locale)} ${t("client.barber.cutsSuffix")}`} />
         </div>
 
         {/* Portfolio Gallery */}
-        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">Portfolio</h2>
+        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">{t("client.barber.portfolio")}</h2>
         <Stagger className="grid grid-cols-3 gap-2">
           {barber.portfolio.map((url, i) => (
             <StaggerItem key={i}>
@@ -86,7 +93,7 @@ function BarberPortfolio() {
         </Stagger>
 
         {/* Reviews */}
-        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">Client reviews</h2>
+        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">{t("client.barber.clientReviews")}</h2>
         <div className="space-y-2">
           {barber.barberReviews.map((r) => (
             <div key={r.id} className="bg-card border border-border rounded-xl p-3">
@@ -106,12 +113,12 @@ function BarberPortfolio() {
         </div>
 
         {/* Schedule */}
-        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">Weekly schedule</h2>
+        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">{t("client.barber.weeklySchedule")}</h2>
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="grid grid-cols-7 gap-1 text-center">
             {Object.entries(barber.weeklySchedule).map(([day, hours]) => (
               <div key={day} className="flex flex-col items-center gap-1">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{DAY_LABELS[day]}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{getDayLabels(t)[day]}</div>
                 <div className={`text-[10px] font-mono ${hours === "Off" ? "text-muted-foreground" : "text-foreground"}`}>
                   {hours === "Off" ? "—" : hours.split("–")[0].replace("am", "").replace("pm", "")}
                 </div>
@@ -121,14 +128,14 @@ function BarberPortfolio() {
         </div>
 
         {/* Services */}
-        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">Services</h2>
+        <h2 className="mt-7 mb-3 text-sm uppercase tracking-wider text-muted-foreground">{t("client.barber.services")}</h2>
         <div className="grid grid-cols-2 gap-2">
           {services.slice(0, 4).map((s) => (
             <div key={s.id} className="bg-card border border-border rounded-xl p-3">
-              <div className="font-display text-sm">{s.name}</div>
+              <div className="font-display text-sm">{getServiceName(s.name, t)}</div>
               <div className="flex items-center justify-between mt-1">
-                <span className="text-[10px] text-muted-foreground">{s.duration} min</span>
-                <span className="font-mono text-primary text-sm">${s.price}</span>
+                <span className="text-[10px] text-muted-foreground">{s.duration} {t("common.min")}</span>
+                <span className="font-mono text-primary text-sm">{formatEGP(s.price, locale)}</span>
               </div>
             </div>
           ))}
@@ -141,7 +148,7 @@ function BarberPortfolio() {
           <button className="h-12 px-4 rounded-md border border-border flex items-center justify-center"><MessageCircle className="w-4 h-4 text-muted-foreground" /></button>
           <Link to="/client/barbers" className="flex-1">
             <button className="w-full h-12 rounded-md bg-primary text-primary-foreground font-display text-xs uppercase tracking-wider active:scale-[0.97] flex items-center justify-center gap-2">
-              View All Barbers
+              {t("client.barber.viewAllBarbers")}
             </button>
           </Link>
         </div>

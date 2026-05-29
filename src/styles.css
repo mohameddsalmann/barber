@@ -11,6 +11,8 @@
   --font-sans: 'Outfit', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
+  --breakpoint-xs: 380px;
+
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 12px;
@@ -138,11 +140,14 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .scrollbar-hide::-webkit-scrollbar {
+  .scrollbar-hide::-webkit-scrollbar,
+  .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
 
-  .scrollbar-hide {
+  .scrollbar-hide,
+  .scrollbar-none {
+    -ms-overflow-style: none;
     scrollbar-width: none;
   }
 

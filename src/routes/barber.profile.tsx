@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, X, Plus, Camera, GripVertical } from "lucide-react";
-import { barbers, reviews } from "@/mock/data";
+import { reviews } from "@/mock/data";
 import { PageShell } from "@/components/motion";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { useCurrentBarber } from "@/hooks/use-current-barber";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/barber/profile")({
   head: () => ({ meta: [{ title: "My Profile — Barber App" }] }),
@@ -11,11 +13,13 @@ export const Route = createFileRoute("/barber/profile")({
 });
 
 function BarberProfile() {
-  const me = barbers[0];
+  const me = useCurrentBarber();
   const [tags, setTags] = useState<string[]>(me.tags);
   const [draft, setDraft] = useState("");
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
+  const { t } = useI18n();
+  useEffect(() => { document.title = t("route.barber.profileTitle"); }, [t]);
 
   if (isDesktop) {
     return (
@@ -25,7 +29,7 @@ function BarberProfile() {
             {/* Left: Profile info form */}
             <div>
               <div className="flex items-center gap-4 mb-6">
-                <img src={me.avatar} alt="" className="w-20 h-20 rounded-full border-4 border-background" />
+                <img src={me.avatar} alt={me.name} className="w-20 h-20 rounded-full border-4 border-background" />
                 <div>
                   <h1 className="text-2xl">{me.name}</h1>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
@@ -38,12 +42,12 @@ function BarberProfile() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Bio</label>
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("barber.profile.bio")}</label>
                   <textarea defaultValue={me.bio} className="mt-1 w-full min-h-[80px] bg-input border border-border rounded-md p-3 text-sm focus:border-primary focus:outline-none resize-none" />
                 </div>
 
                 <div>
-                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Specialties</label>
+                  <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("barber.profile.specialties")}</label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {tags.map((t) => (
                       <span key={t} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px]" style={{ backgroundColor: "rgba(244,63,94,0.15)", color: "#F43F5E" }}>
@@ -52,14 +56,14 @@ function BarberProfile() {
                       </span>
                     ))}
                     <div className="flex items-center gap-1">
-                      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add..." className="h-7 px-2 rounded-full bg-input border border-border text-[11px] w-24 focus:border-primary focus:outline-none" />
+                      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t("barber.profile.addPlaceholder")} className="h-7 px-2 rounded-full bg-input border border-border text-[11px] w-24 focus:border-primary focus:outline-none" />
                       <button onClick={() => { if (draft.trim()) { setTags((p) => [...p, draft.trim()]); setDraft(""); } }} className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Plus className="w-3 h-3" /></button>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">Recent reviews</h2>
+                  <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">{t("barber.profile.recentReviews")}</h2>
                   <div className="space-y-2">
                     {reviews.slice(0, 3).map((r) => (
                       <div key={r.id} className="bg-card border border-border rounded-xl p-3">
@@ -78,9 +82,9 @@ function BarberProfile() {
             {/* Right: Portfolio grid with reorder */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm uppercase tracking-wider text-muted-foreground">Portfolio</h2>
+                <h2 className="text-sm uppercase tracking-wider text-muted-foreground">{t("barber.profile.portfolio")}</h2>
                 <button className="h-8 px-3 rounded-md bg-primary text-primary-foreground font-display text-[10px] uppercase tracking-wider flex items-center gap-1.5">
-                  <Plus className="w-3 h-3" />Add Photo
+                  <Plus className="w-3 h-3" />{t("barber.profile.addPhoto")}
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -113,7 +117,7 @@ function BarberProfile() {
       </div>
       <div className="px-5 -mt-10 relative">
         <div className="flex items-end gap-3">
-          <img src={me.avatar} alt="" className="w-20 h-20 rounded-full border-4 border-background" />
+          <img src={me.avatar} alt={me.name} className="w-20 h-20 rounded-full border-4 border-background -mt-10" />
           <div className="pb-2">
             <h1 className="text-2xl">{me.name}</h1>
             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
@@ -125,12 +129,12 @@ function BarberProfile() {
         </div>
 
         <div className="mt-5">
-          <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Bio</label>
+          <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("barber.profile.bio")}</label>
           <textarea defaultValue={me.bio} className="mt-1 w-full min-h-[80px] bg-input border border-border rounded-md p-3 text-sm focus:border-primary focus:outline-none resize-none" />
         </div>
 
         <div className="mt-4">
-          <label className="text-[10px] uppercase tracking-wider text-muted-foreground">Specialties</label>
+          <label className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("barber.profile.specialties")}</label>
           <div className="flex flex-wrap gap-2 mt-2">
             {tags.map((t) => (
               <span key={t} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px]" style={{ backgroundColor: "rgba(244,63,94,0.15)", color: "#F43F5E" }}>
@@ -139,14 +143,14 @@ function BarberProfile() {
               </span>
             ))}
             <div className="flex items-center gap-1">
-              <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add..." className="h-7 px-2 rounded-full bg-input border border-border text-[11px] w-24 focus:border-primary focus:outline-none" />
+              <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t("barber.profile.addPlaceholder")} className="h-7 px-2 rounded-full bg-input border border-border text-[11px] w-24 focus:border-primary focus:outline-none" />
               <button onClick={() => { if (draft.trim()) { setTags((p) => [...p, draft.trim()]); setDraft(""); } }} className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Plus className="w-3 h-3" /></button>
             </div>
           </div>
         </div>
 
         <div className="mt-5">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">Portfolio</h2>
+          <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">{t("barber.profile.portfolio")}</h2>
           <div className="grid grid-cols-2 gap-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="aspect-square rounded-xl border border-border relative overflow-hidden" style={{ background: `linear-gradient(${135 + i * 30}deg, #16161A, #27272A)` }}>
@@ -159,7 +163,7 @@ function BarberProfile() {
         </div>
 
         <div className="mt-6">
-          <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">Recent reviews</h2>
+          <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-2">{t("barber.profile.recentReviews")}</h2>
           <div className="space-y-2">
             {reviews.slice(0, 3).map((r) => (
               <div key={r.id} className="bg-card border border-border rounded-xl p-3">

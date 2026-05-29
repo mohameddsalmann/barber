@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Play, Power, DollarSign, Clock, Star, Users } from "lucide-react";
-import { todayQueue, getService, barbers, barberEarningsWeek } from "@/mock/data";
+import { todayQueue, getService, barberEarningsWeek } from "@/mock/data";
 import { PageShell, Stagger, StaggerItem } from "@/components/motion";
 import { StatusBadge } from "@/components/badges";
 import { useWindowSize } from "@/hooks/use-window-size";
+import { useCurrentBarber } from "@/hooks/use-current-barber";
+import { useI18n, getServiceName } from "@/lib/i18n";
+import { formatEGP } from "@/lib/format";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 
 export const Route = createFileRoute("/barber/")({
@@ -14,7 +17,9 @@ export const Route = createFileRoute("/barber/")({
 });
 
 function BarberHome() {
-  const me = barbers[0];
+  const me = useCurrentBarber();
+  const { t } = useI18n();
+  useEffect(() => { document.title = t("route.barber.todayTitle"); }, [t]);
   const [clockedIn, setClockedIn] = useState(true);
   const myQueue = todayQueue.filter((q) => q.barberId === me.id);
   const next = myQueue.find((q) => q.status === "waiting");
@@ -29,20 +34,22 @@ function BarberHome() {
 }
 
 function MobileHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
+  const { t, locale } = useI18n();
   return (
     <PageShell>
       <div className="px-5 pt-5">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <div className="text-xs text-muted-foreground">Good morning</div>
+            <div className="text-xs text-muted-foreground">{t("today.goodMorning")}</div>
             <h1 className="text-xl">{me.name.split(" ")[0]}</h1>
           </div>
-          <img src={me.avatar} alt="" className="w-11 h-11 rounded-full" />
+          <img src={me.avatar} alt={me.name} className="w-11 h-11 rounded-full" />
         </div>
 
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => setClockedIn(!clockedIn)}
+          aria-label={clockedIn ? t("queue.clockOut") : t("queue.clockIn")}
           className="w-full h-14 rounded-xl font-display tracking-widest uppercase text-sm flex items-center justify-center gap-2 transition-colors"
           style={{
             backgroundColor: clockedIn ? "#D4AF37" : "transparent",
@@ -51,7 +58,7 @@ function MobileHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
           }}
         >
           <Power className="w-4 h-4" />
-          {clockedIn ? "Clocked In" : "Clock In"}
+          {clockedIn ? t("queue.clockedIn") : t("queue.clockIn")}
         </motion.button>
 
         {next && (
@@ -67,18 +74,18 @@ function MobileHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
                 {next.clientName.charAt(0)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] uppercase tracking-wider text-primary">Next Client</div>
+                <div className="text-[10px] uppercase tracking-wider text-primary">{t("queue.nextClient")}</div>
                 <div className="font-display text-base mt-0.5 truncate">{next.clientName}</div>
-                <div className="text-xs text-muted-foreground">{getService(next.serviceId).name} · {next.time}</div>
+                <div className="text-xs text-muted-foreground">{getServiceName(getService(next.serviceId).name, t)} · {next.time}</div>
               </div>
               <button className="h-10 px-4 rounded-md bg-primary text-primary-foreground font-display text-xs uppercase tracking-wider active:scale-[0.97] flex items-center gap-1.5">
-                <Play className="w-3 h-3" />Start
+                <Play className="w-3 h-3" />{t("queue.start")}
               </button>
             </div>
           </motion.div>
         )}
 
-        <h2 className="mt-6 mb-2 text-sm uppercase tracking-wider text-muted-foreground">Today's Queue</h2>
+        <h2 className="mt-6 mb-2 text-sm uppercase tracking-wider text-muted-foreground">{t("today.upcomingQueue")}</h2>
         <Stagger className="space-y-2">
           {myQueue.map((q: any, i: number) => (
             <StaggerItem key={q.id}>
@@ -97,12 +104,12 @@ function MobileHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
 
       <div className="mt-6 mx-5 mb-2 grid grid-cols-2 gap-3">
         <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Earnings</div>
-          <div className="font-mono text-2xl mt-1">$240</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("earnings.earned")}</div>
+          <div className="font-mono text-2xl mt-1">{formatEGP(me.todayEarnings, locale)}</div>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Tips</div>
-          <div className="font-mono text-2xl mt-1 text-primary">$35</div>
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("earnings.tips")}</div>
+          <div className="font-mono text-2xl mt-1 text-primary">{formatEGP(210, locale)}</div>
         </div>
       </div>
     </PageShell>
@@ -110,49 +117,52 @@ function MobileHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
 }
 
 function DesktopHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
+  const { t, locale } = useI18n();
+  const recentDone = myQueue.filter((q: any) => q.status === "done");
+
   return (
     <PageShell>
       <div className="p-6 max-w-[1200px] mx-auto">
         {/* Top stats bar */}
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <DesktopStat icon={DollarSign} label="Today's Earnings" value={`$${me.todayEarnings}`} />
-          <DesktopStat icon={Clock} label="Avg Service Time" value="32 min" />
-          <DesktopStat icon={Star} label="Rating" value={me.rating.toString()} accent />
-          <DesktopStat icon={Users} label="Today's Cuts" value={me.todayCuts.toString()} />
+          <DesktopStat icon={DollarSign} label={t("today.earnings")} value={formatEGP(me.todayEarnings, locale)} />
+          <DesktopStat icon={Clock} label={t("today.avgServiceTime")} value={`32 ${t("common.min")}`} />
+          <DesktopStat icon={Star} label={t("today.rating")} value={me.rating.toString()} accent />
+          <DesktopStat icon={Users} label={t("today.cuts")} value={me.todayCuts.toString()} />
         </div>
 
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Upcoming queue */}
           <div>
-            <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">Upcoming Queue</h2>
+            <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">{t("today.upcomingQueue")}</h2>
             <div className="space-y-3">
-              {myQueue.slice(0, 3).map((q: any, i: number) => (
+              {myQueue.slice(0, 5).map((q: any, i: number) => (
                 <div key={q.id} className="bg-card border border-border rounded-xl p-4 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center font-display text-primary">
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-display text-sm">{q.clientName}</div>
-                    <div className="text-[11px] text-muted-foreground">{getService(q.serviceId).name} · {q.time}</div>
+                    <div className="text-[11px] text-muted-foreground">{getServiceName(getService(q.serviceId).name, t)} · {q.time}</div>
                   </div>
                   <StatusBadge status={q.status} />
                   {q.status === "waiting" && (
-                    <button className="h-8 px-3 rounded-md bg-primary text-primary-foreground font-display text-[10px] uppercase tracking-wider flex items-center gap-1">
-                      <Play className="w-3 h-3" />Start
+                    <button className="h-8 px-3 rounded-md bg-primary text-primary-foreground font-display text-[10px] uppercase tracking-wider flex items-center gap-1" aria-label={`${t("queue.start")} ${q.clientName}`}>
+                      <Play className="w-3 h-3" />{t("queue.start")}
                     </button>
                   )}
                 </div>
               ))}
-              {myQueue.length === 0 && <div className="text-sm text-muted-foreground py-8 text-center">No clients in queue</div>}
+              {myQueue.length === 0 && <div className="text-sm text-muted-foreground py-8 text-center">{t("queue.noClients")}</div>}
             </div>
           </div>
 
           {/* Right: Earnings chart + activity */}
           <div>
-            <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">This Week</h2>
+            <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">{t("today.thisWeek")}</h2>
             <div className="bg-card border border-border rounded-2xl p-4 mb-4">
-              <div className="h-48">
+              <div className="h-64">
                 <ResponsiveContainer>
                   <BarChart data={barberEarningsWeek} margin={{ left: -18, top: 8 }}>
                     <CartesianGrid stroke="#27272A" strokeDasharray="3 3" />
@@ -165,18 +175,22 @@ function DesktopHome({ me, clockedIn, setClockedIn, myQueue, next }: any) {
               </div>
             </div>
 
-            <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">Recent Activity</h2>
-            <div className="space-y-2">
-              {myQueue.filter((q: any) => q.status === "done").slice(0, 3).map((q: any) => (
-                <div key={q.id} className="bg-card border border-border rounded-xl px-4 py-3 flex items-center justify-between">
-                  <div>
-                    <div className="font-display text-sm">{q.clientName}</div>
-                    <div className="text-[11px] text-muted-foreground">{getService(q.serviceId).name} · Completed</div>
-                  </div>
-                  <div className="font-mono text-sm text-primary">${getService(q.serviceId).price}</div>
+            {recentDone.length > 0 && (
+              <>
+                <h2 className="text-sm uppercase tracking-wider text-muted-foreground mb-3">{t("today.recentActivity")}</h2>
+                <div className="space-y-2">
+                  {recentDone.slice(0, 3).map((q: any) => (
+                    <div key={q.id} className="bg-card border border-border rounded-xl px-4 py-3 flex items-center justify-between">
+                      <div>
+                        <div className="font-display text-sm">{q.clientName}</div>
+                        <div className="text-[11px] text-muted-foreground">{getServiceName(getService(q.serviceId).name, t)} · {t("today.completed")}</div>
+                      </div>
+                      <div className="font-mono text-sm text-primary">{formatEGP(getService(q.serviceId).price, locale)}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
